@@ -1,149 +1,112 @@
 /*REALIZAR UN PROTOTIPO DE UN TRADUCTOR DE INGLES A ESPAÑOL*/
 
 #include <stdio.h>
-#include<string.h>
-#define N 50
+#include <string.h>
 
+#define MAX_LETRAS 50
+#define MAX_PALABRAS 50
 
-struct traductor
+void anadir_palabra();
+void menu_traducir();
+void traducir_palabra( int _Modo );
+
+struct {
+	char ing[MAX_LETRAS];
+	char esp[MAX_LETRAS];
+} palabra[MAX_PALABRAS];
+
+int registradas = 0;
+
+int main()
 {
-	char eng[N];
-	char esp[N];
-	int lleno;
-}trad[N];
-
-void vacio();
-void anadir();
-void traducir();
-void tradu(int op);
-int main(){
-	int op;
+	short opcion;
 	char key;
+	
+	do {
+		do {
+			printf("\nBIENVENIDO AL TRADUCTOR INGLES-ESPAÑOL :9 \n");
+			printf("ELIGE QUE DESEAS HACER\n");
+			printf("\n[1] AÑADIR UNA PALABRA AL DICCIONARIO");
+			printf("\n[2] TRADUCIR\n\n");
+			scanf( "%hd", &opcion );
+			getchar();
 
-	vacio();//FUNCION QUE ESTABLECE LA VARIABLE LLENO A CERO, ES DECIR LIMITA QUE NO SE INTRODUZCAN MAS ELEMENTOS  
-				//AL PRINCIPIO DEL PROGRAMA TODOS ESTAN DISPONIBLES PARA LLENAR
-	do{
+		} while ( opcion < 1 || 2 < opcion );
 
-		do{
-		printf("BIENVENIDO AL TRADUCTOR INGLES-ESPAÑOL :9 \n");
-		printf("ELIGE QUE DESEAS HACER\n");
-		printf("\n[1] AÑADIR UNA PALABRA AL DICCIONARIO");
-		printf("\n[2] TRADUCIR");
-		scanf("%d",&op);
-		}while(op<1||op>2);//BUCLE PARA EVITAR QUE SELECCIONEMOS VALORES MENOS DE 1 Y MAYORES QUE 2
-
-		switch(op)//COMPARA EL VALOR DE OP
-		{
-			case 1: //SI ES 1 SE EJECUTARA LA FUNCION AÑADIR
-			  	anadir();
+		switch ( opcion ) {
+			case 1: //añadir
+				if ( registradas <  MAX_PALABRAS ) // si hay cupo
+					anadir_palabra();
 				break;
 			case 2:
-				traducir();//SI ES 2 SE EJECUTARA LA FUNCION TRADUCIR
+				menu_traducir();
 				break;
 		}
-		fflush(stdin);
-		getchar();
-		printf("\nDESEA HACER OTRA OPERACION? [S][N]: "); //AQUI ME SALTA NO SE POR QUE
-		scanf("%c",&key);
-	}while(key=='S'||key=='s'); // SE EJECUTARA EL CICLO HASTA QUE EL USUARIO LO QUIERA
+
+		printf( "\nDESEA HACER OTRA OPERACION? [S][N]: ");
+		scanf( "%c", &key );
+
+	} while( key == 'S' || key == 's' );
 
 	return 0;
 }
 
-
-void vacio() //FUNCION QUE SIRVE COMO IDENTIFICADOR SI EL LUGAR ESTA VACIO O NO
+void anadir_palabra()
 {
-	int i;
+	/* Ya se sabe cuantas palabras se han registrado
+	 * si hay 5 palabras, la ultima quedo en la 4,
+	 * asi que escribir en el indice 5 es seguro.
+	 * Al final incrementamos el conteo de palabras */
 
-	for (i = 0; i < N; ++i)//SE EJECUTA HASTA PONER TODOS LOS LLENOS A CERO
-							//AL INICIO DEL PROGRAMA ESTAN TODOS LOS DATOS DISPONIBLES
-	{						//POR QUE EL CERO ACTUA COMO IDENTIFICADOR 0<-DISPONIBLE 1<-NO DISPONIBLE
-		trad[i].lleno=0; 
-	}
-
+	printf("\nINTRODUCE LA PALABRA EN INGLES: ");
+	fgets( palabra[registradas].ing, MAX_LETRAS, stdin);
+	printf("\nINTRODUCE LA PALABRA EN ESPAÑOL: ");
+	fgets( palabra[registradas].esp, MAX_LETRAS,stdin);
+	++registradas;
 }
 
-
-void anadir()
+void menu_traducir()
 {
-		
-	int i,aux=0; //AUX ES UNA VARIBLE QUE SIRVE COMO RUTA DE ESCAPE
+	short opcion;
+
+	do {
+		printf("\nELIGE QUE DESEAS HACER");
+		printf("\n[1] TRADUCIR DE INGLES-ESPAÑOL");
+		printf("\n[2] TRADUCIR DE ESPAÑOL-INGLES\n\n");
+		scanf( "%hd",&opcion );
+		getchar();
+	} while( opcion < 1 || 2 < opcion );
 	
-	for (i = 0; i < N && aux==0; i++) //PROGRAMA VA A FUNCIONAR HASTA QUE EL CONTADOR SEA MENOR QUE N Y SOLO SE EJECUTE
-	{																				//UNA VEZ GRACIAS A aux
-		if(trad[i].lleno==0)//PREGUNTA SI LA VARIABLE LLENO ES CERO ENTONCES ESTA DISPONIBLE PARA LLENAR
-		{
-			printf("INTRODUCE LA PALABRA EN INGLES: "); //SE PROCEDE A LLENAR CON INFO
-			fgets(trad[i].eng,N,stdin);
-			getchar();//SE LIMPIA EL BUFFER
-						
-			printf("\nINTRODUCE LA PALABRA EN ESPAÑOL: ");
-			fgets(trad[i].esp,N,stdin);
-			getchar();
-			
-			trad[i].lleno=1;// COMO SE HA LLENADO ESA VARIABLE DE ESTRUCTURA SE PONE 1 
-			aux=1; //SE ASIGNA 1 PARA QUE SE CUMPLA LA RUTA DE ESCAPE
-		}
-	}
-
-}
-
-void traducir()
-{
-
-	int op;
-	do{
-		printf("ELIGE QUE DESEAS HACER\n");
-		printf("[1] TRADUCIR DE INGLES-ESPAÑOL");
-		printf("[2] TRADUCIR DE ESPAÑOL-INGLES");
-		scanf("%d",&op);
-	}while(op<1||op>2);//BUCLE PARA EVITAR QUE SELECCIONEMOS VALORES MENOS DE 1 Y MAYORES QUE 2
-
-	switch(op)
-	{
-		case 1:
-			tradu(op);//SE PASA EL PARAMETRO DE OP
-			break;
-		case 2:
-			tradu(op);
-			break;
-	}
-
+	traducir_palabra( opcion );
 }	
 
-void tradu(int op){
-	int i,j,temp=0; //TEMP ES UNA VARIABLE QUE SIRVE COMO RUTA DE ESCAPE 
-	char aux[N]; //VECTOR PARA ALMACENAR LA PALABRA QUE SE DESEA BUSCAR
+void traducir_palabra( int _Modo )
+{
+	char palabra_ingresada[MAX_LETRAS];
 
-	printf("INTRODUCE LA PALABRA QUE DESEAS BUSCAR: ");
-	fgets(aux,N,stdin);
-	getchar();
+	printf( "\nINTRODUCE LA PALABRA QUE DESEAS BUSCAR: ");
+	fgets( palabra_ingresada, MAX_LETRAS, stdin );
 
-
-	if(op==1) //SI ELEGISTE TRADUCIR DEL INGLES AL ESPAÑOL
-	{
-		for (i = 0; i < N && temp==0; i++)
-		{
-			j=strcmp(aux,trad[i].eng); //AQUI ES IMPORTANTE ACLARAR QUE VA A BUSCAR EN TODAS LAS VARIABLES LA PALABRA
-			if(j==0) //QUE BUSCAS GRACIAS AL CONTADOR Y SE COMPARA LA CADENA PARA VER SI ES LA MISMA PALABRA
-			{//SI ES LA MISMA LA FUNCION strcmp RETORNA UN CERO QUE SE ALMACENA EN J
-				printf("LA TRADUCCION DE %s es %s.",trad[i].eng,trad[i].esp); //SE MUESTRA LA TRADUCCION
-				temp=1;   //COMO ES EVIDENTE QUE SE INGRESO LA PALABRA EN INGLES EN ESPAÑOL EN LA MISMA POSICION DEL VECTOR
-			}		//PERO EN DIFERENTE VARIABLES SE IMPRIMEN LAS DOS GRACIAS A i
-		}
-	}
-	else //SI NO ELEGISTE TRADUCIR DEL INGLES AL ESPAÑOL ES EVIDENTE QUE BUSCAS TRADUCIR ESPAÑOL AL INGLES
-	{
-		for (i = 0; i < N && temp==0; i++)
-		{
-			j=strcmp(aux,trad[i].esp); //LO MISMO, BUSCARA LA PALABRA DENTRO DEL esp
-			if(j==0) //SI SON IGUALES SE IMPRIME
-			{
-				printf("LA TRADUCCION DE %s es %s",trad[i].esp,trad[i].eng);
-				temp=1;
-			}
-		}
-	}
+	int i = 0;
+	/* Aqui empleamos el operador ternario ?: . si _Modo
+	 * es 1, vanos a comparar la palabra ingresada con
+	 * la version en ingles, de lo contrario, con la "otra".
+	 * El ciclo se rompera si strcmp nos devuelce 0 (false)
+	 * o si el contador llego al numero de registradas */
+	while ( i < registradas &&
+				strcmp( palabra_ingresada,
+					_Modo == 1 ? palabra[i].ing : palabra[i].esp ) )
+		++i;
+	
+	/* Si el contador igualo las registradas, significa
+	 * que supero el limite y no la encontro. por lo tanto
+	 * verificamos que sea menor (la busqueda tuvo exito).
+	 * Este metodo esta patentado por tu servidor jeje*/
+	if ( i < registradas )
+		printf("\nLA TRADUCCION DE %s es %s",
+			_Modo == 1 ? palabra[i].ing : palabra[i].esp,
+			_Modo == 1 ? palabra[i].esp : palabra[i].ing );
 
 }
+
 
